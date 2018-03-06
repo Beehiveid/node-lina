@@ -13,10 +13,12 @@ var connection = mysql.createConnection({
 
 router.get('/',function(req, res, next){
     res.send("Outletter API");
+    
 });
 
 router.get('/getNumber/:dept',function(req, res, next){
   debug("getNumber");
+
   let result = {};
   var sql = `select key_number from outletter where department=? order by created_date desc limit 1`;
   connection.query(sql,[req.params.dept], function(err, rows, field){
