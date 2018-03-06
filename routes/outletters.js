@@ -23,9 +23,16 @@ router.get('/getNumber/:dept',function(req, res, next){
   var sql = `select key_number from outletter where department=? order by created_date desc limit 1`;
   connection.query(sql,[req.params.dept], function(err, rows, field){
     if(err) throw err;
-    result = {
-      key_number : rows[0].key_number
+    if(rows.length){
+      result = {
+        key_number : rows[0].key_number
+      }
+    }else{
+      result = {
+        key_number : 0
+      }
     }
+    
 
     res.json(result);
   });
