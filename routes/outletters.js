@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var dotenv = require('dotenv').config({path: '../.env'});
 var debug = require('debug')("node-lina:outletter");
+var uuidv4 = require('uuid/v4');
+var moment = require('moment');
 
 var connection = mysql.createConnection({
   host     : process.env.DB_HOST,
@@ -32,11 +34,37 @@ router.get('/getNumber/:dept',function(req, res, next){
         key_number : 0
       }
     }
-    
-
     res.json(result);
   });
   
 });
+
+router.post('/', function(req, res, next){
+  debug("post outletter");
+  req.body.id = uuidv4();
+  req.body.created_date = moment().format("YYYY-M-DD HH:mm:ss");
+  let data = req.body;
+  debug(req.body);
+
+  let sql = `insert into outletter(id,sender,receiver,department,created_date,key_number,letter_number) 
+  values(?,?,?,?,?,?,?)`;
+
+  connection.query(sql,[data.id,data.sender,data.receiver,data.department,data.created_date,data.key_number,data.letter_number], function(err, rows, field){
+    let result = {};
+    if(err){
+      result = {
+        success: false,
+        message: err.message
+      }
+    }else{
+      result = {
+        success: true,
+        message: "Insert complete"
+      }
+    }
+
+    res.json(result);
+  });
+})
 
 module.exports = router;
