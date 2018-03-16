@@ -1,26 +1,20 @@
 var express = require('express');
 var router = express.Router();
-var mysql = require('mysql');
-var dotenv = require('dotenv').config({path: '../.env'});
 var debug = require('debug')("node-lina:outletter");
 var uuidv4 = require('uuid/v4');
 var moment = require('moment');
+var database = require('../modules/database');
 
-var connection = mysql.createConnection({
-  host     : process.env.DB_HOST,
-  user     : process.env.DB_USER,
-  password : process.env.DB_PASS,
-  database : process.env.DB_NAME
-});
+var db = new database("MySQL");
+var connection = db.open();
 
 router.get('/',function(req, res, next){
     res.send("Outletter API");
-    
 });
 
 router.get('/getNumber/:dept',function(req, res, next){
   debug("getNumber");
-
+  
   let result = {};
   var sql = `select key_number from outletter where department=? order by created_date desc limit 1`;
   connection.query(sql,[req.params.dept], function(err, rows, field){
